@@ -22,21 +22,32 @@ document.addEventListener("DOMContentLoaded", () => {
     // 🪲 Bug: Asynchronous function ?
     document.getElementById("solveRoom3").addEventListener("click", () => {
         fetch('directions.json') 
-            .then(response => response.json())
-            .then(directions => {
-                navigateLabyrinth(directions)
-                    .then(message => {
+        .then(response =>{
+            if(!response.ok) {
+                throw new Error(response.statusText);
+            }
+            return response.json();
+    })
+    .then(directions => {
+        if (!directions || typeof directions !== 'object') {
+            throw new Error('Invalid directions data');
+        }
+        return navigateLabyrinth(directions);
+    })
+    .then(message => {
                         // 🪲 Bug: Incorrect method
                         document.getElementById("room3Result").innerHTML = 
                         `<p>${message}</p>`;
                     });
             });
     });
-});
+
 
 function findMostRecentBook(books) {
+    return books.reduce((mostRecent, book) => {
     // 🪲 Bug: Logic error
     return books.reduce((mostRecent, book) => new Date(book.published) < new Date(mostRecent.published) ? book : mostRecent);
+})
 }
 
 function findIntersection(setA, setB) {
